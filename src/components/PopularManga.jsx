@@ -11,7 +11,7 @@ import { useState } from "react";
 import { Manga, login } from "mangadex-full-api";
 import MFA from "mangadex-full-api";
 import { MangaStats } from "./MangaStats";
-// const MFA = require('mangadex-full-api');
+// const {MFA} = require('mangadex-full-api');
 const username = "Demond_Corkery";
 const password = "hC7wQ7DAnFvFMXa";
 MFA.login(username, password).then(async () => {
@@ -27,7 +27,7 @@ function Card(props) {
   return (
     <SkeletonTheme baseColor="#334155" highlightColor="#475569">
       <a
-        href={props.url || "#"}
+        href={props.url}
         className=" inline-grid aspect-[1.618] w-full max-w-sm grid-cols-3 overflow-hidden rounded-md bg-slate-800/80 shadow-md md:rounded-lg"
       >
         <div className="relative ">
@@ -45,14 +45,10 @@ function Card(props) {
             rating={props.rating}
             save={props.save}
             status={props.status}
-            size={{fontSize: '0.8rem'}}
+            size={{ fontSize: "0.8rem" }}
           />
           <div className="flex flex-wrap gap-2 pt-2">
-            <Tag name="Action" />
-            <Tag name="Comedy" />
-            <Tag name="Sport" />
-            <Tag name="Pswqwqww" />
-            <Tag name="Sport" />
+            <Tag tags={props.tags} />
           </div>
         </div>
       </a>
@@ -61,8 +57,15 @@ function Card(props) {
 }
 function Tag(props) {
   return (
-    <div className="rounded bg-slate-700/80 px-2 text-xs font-semibold text-slate-300 md:text-sm">
-      {props.name}
+    <div className="flex flex-wrap gap-1 ">
+      {props.tags?.slice(0, 5).map((item, index) => (
+        <span
+          className="rounded bg-slate-700/80 px-1.5  text-xs font-semibold text-slate-300 md:text-sm"
+          key={index}
+        >
+          {item.name}
+        </span>
+      ))}
     </div>
   );
 }
@@ -71,7 +74,52 @@ function PopularManga() {
   const [manga, setManga] = useState([]);
   const [loading, setLoading] = useState(true);
   const url = "https://api.mangadex.org/";
-
+  let tags = [
+    {
+      name: "Action",
+      url: "#",
+    },
+    {
+      name: "Adventure",
+      url: "#",
+    },
+    {
+      name: "Comedy",
+      url: "#",
+    },
+    {
+      name: "Drama",
+      url: "#",
+    },
+    {
+      name: "Fantasy",
+      url: "#",
+    },
+    {
+      name: "Historical",
+      url: "#",
+    },
+    {
+      name: "Horror",
+      url: "#",
+    },
+    {
+      name: "Drama",
+      url: "#",
+    },
+    {
+      name: "Fantasy",
+      url: "#",
+    },
+    {
+      name: "Historical",
+      url: "#",
+    },
+    {
+      name: "Horror",
+      url: "#",
+    },
+  ];
   return (
     <>
       <div className="text-2xl font-medium md:text-3xl ">Popular</div>
@@ -123,12 +171,19 @@ function PopularManga() {
             status="ongoing"
             rating="4.2"
             save="123"
+            url="/manga"
+            tags={tags}
           />
         </SwiperSlide>
         <SwiperSlide>
           <Card
             status="completed"
             img="https://api.lorem.space/image/movie?w=300&hash=aosqvvvl"
+            title="Lrem dasa iiw ond  wqm awqoeuy  asdasdasdn"
+            rating="4.2"
+            save="123"
+            url="/manga"
+            tags={tags}
           />
         </SwiperSlide>
         <SwiperSlide>

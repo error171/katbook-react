@@ -24,10 +24,10 @@ function Header() {
 
         <div className="flex items-center gap-4">
           <div className="sm:gap-4 sm:flex">
-            <form action="search" className="hidden mb-0 md:flex">
+            <form className="hidden mb-0 md:flex">
               <div className="relative">
                 <input
-                  className="h-10 pr-10 text-sm rounded-full placeholder-slate-300 bg-slate-700 focus:z-10"
+                  className="h-10 pr-10 border-0 text-sm rounded-full placeholder-slate-300 bg-slate-800 focus:z-10"
                   placeholder="Search..."
                   type="text"
                   required
@@ -46,7 +46,7 @@ function Header() {
             <HiSearch size={24} />
           </button>
           <button>
-            <HiUserCircle className="text-slate-400" size={36} />
+            <HiUserCircle className="text-slate-300 h-full w-8 lg:w-10"/>
           </button>
           {/* <input type="checkbox" name="" id="checkbox" className="hidden peer"/>
           <label htmlFor="checkbox">
