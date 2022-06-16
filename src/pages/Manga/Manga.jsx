@@ -1,5 +1,5 @@
 import { React, useEffect } from "react";
-// import "./Manga.css";
+import "./Manga.css";
 import { FaEllipsisH, FaRegBookmark, FaRegClock } from "react-icons/fa";
 import { HiBookOpen } from "react-icons/hi";
 import { MangaStats } from "../../components/MangaStats";
@@ -10,23 +10,23 @@ function Banner(props) {
   return (
     <div
       id="banner"
-      className="banner-container absolute top-0 left-0 -z-10 md:h-64 h-56 xl:h-72 w-full overflow-hidden brightness-[0.65]"
+      className="banner-container h-64  overflow-hidden md:h-72 lg:h-64 xl:h-[300px]"
     >
       <div
-        className="-z-10 h-full w-full bg-cover bg-fixed bg-center bg-no-repeat blur"
+        className="-z-10 h-full w-full bg-cover bg-fixed bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${props.url})` }}
       ></div>
-        <div className="absolute inset-0 from-slate-900/90 bg-gradient-to-r to-transparent"></div>
+      {/* <div className="absolute inset-0  bg-gradient-to-r backdrop-blur from-slate-900/90 to-transparent"></div> */}
     </div>
   );
 }
 function MangaCover(props) {
   return (
-    <div className="relative aspect-[5/7] h-auto w-1/2 rounded-md sm:row-span-2 sm:w-full">
-      <img
-        className="h-full rounded-md z-10 w-full object-cover object-center"
+    <div className="relative h-auto w-1/2 rounded-md sm:row-span-2 sm:w-full">
+      {<img
+        className="z-10 h-full w-full rounded-md object-cover object-center"
         src={props.url}
-      />
+      /> || <Skeleton height={'100%'}/>}
     </div>
   );
 }
@@ -44,7 +44,7 @@ function MangaInfo(props) {
       </h2>
 
       <div className="text-sm sm:text-lg">{props.author}</div>
-      <div className="text-sm lg:text-base font-medium">
+      <div className="text-sm font-medium lg:text-base">
         Publication: {props.publicationDate},
         {props.status === "ongoing" ? (
           <span className="text-blue-400"> Ongoing</span>
@@ -61,11 +61,11 @@ function MangaInfo(props) {
 }
 function Tag(props) {
   return (
-    <div className="flex flex-wrap gap-1 place-self-start md:mt-2 sm:col-span-3	">
+    <div className="flex flex-wrap gap-1 place-self-start sm:col-span-3 md:mt-2	">
       {props.tags.map((item, index) => (
         <a
           href={item.url}
-          className="rounded bg-slate-700/80 px-1.5 text-xs font-semibold text-slate-300 md:text-sm"
+          className="rounded bg-slate-200 px-1.5 text-xs font-semibold text-slate-600 dark:bg-slate-700/80 dark:text-slate-300 md:text-sm"
           key={index}
         >
           {item.name}
@@ -76,16 +76,16 @@ function Tag(props) {
 }
 function Buttons(props) {
   return (
-    <div className="inline-flex sm:items-end w-full gap-2 sm:col-span-2 sm:col-start-2 sm:row-start-2">
-      <button className="inline-flex sm:order-last aspect-square h-12 w-12 items-center justify-center rounded-lg bg-slate-800 active:bg-slate-800/70">
+    <div className="inline-flex  w-full gap-2 sm:col-span-2 sm:col-start-2 sm:row-start-2 sm:items-end">
+      <button className="inline-flex aspect-square  h-12 w-12 items-center justify-center rounded-lg bg-slate-200 shadow-md active:bg-slate-300 dark:bg-slate-800 dark:active:bg-slate-800/70 sm:order-last">
         <FaEllipsisH size={20} />
       </button>
-      <button className="inline-flex aspect-square h-12 w-12 items-center justify-center rounded-lg bg-slate-800 active:bg-slate-800/70">
+      <button className="inline-flex aspect-square h-12 w-12 items-center justify-center rounded-lg bg-slate-200 shadow-md active:bg-slate-300 dark:bg-slate-800 dark:active:bg-slate-800/70">
         <FaRegBookmark size={20} />
       </button>
       <a
         href={props.url}
-        className="inline-flex sm:order-first h-12 grow cursor-pointer items-center justify-center gap-1 rounded-lg bg-emerald-500 font-bold text-slate-800 shadow-lg shadow-emerald-800 active:bg-emerald-600"
+        className="inline-flex h-12 grow cursor-pointer items-center justify-center gap-1 rounded-lg bg-emerald-500 font-bold shadow-lg shadow-emerald-300 active:bg-emerald-600  dark:shadow-emerald-800 sm:order-first"
       >
         <HiBookOpen size={24} />
         Read
@@ -97,22 +97,24 @@ function Description(props) {
   const [showMore, setShowMore] = useState(false); // show more is false by default
 
   return (
-    <div className="mt-2 sm:col-span-4 text-sm xl:text-base">
+    <div className="mt-2 text-sm sm:col-span-4 xl:text-base">
       <div
         className="relative truncate whitespace-pre-line border-b border-emerald-500/80 p-1"
         onClick={() => setShowMore(!showMore)} // toggle show more
       >
         {/* overlay */}
-        {!showMore ? 
-        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent  to-transparent"></div>
-        : ""}
+        {!showMore ? (
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-100  via-transparent to-transparent  dark:from-slate-900"></div>
+        ) : (
+          ""
+        )}
         {/* // substring the description */}
         {showMore ? props.text : `${props.text.substring(0, 150)}...`}
       </div>
       <div className="flex w-full justify-center ">
         <button
           onClick={() => setShowMore(!showMore)} // toggle show more
-          className="rounded-b bg-emerald-500/80 px-2 font-semibold text-slate-900"
+          className="rounded-b bg-emerald-500/80 px-2 font-medium"
         >
           {showMore ? "⬆ Show less" : "⬇ Show more"}
         </button>
@@ -125,7 +127,7 @@ function ChapterList(props) {
     <div className=" w-full sm:col-span-4">
       <div className="my-2 flex items-center justify-between">
         <h1 className="text-xl xl:text-2xl">Chapters</h1>
-        <select className="rounded bg-slate-800 pr-8 text-sm">
+        <select className="rounded bg-slate-200 pr-8 text-sm dark:bg-slate-800">
           <option value="newest">Newest Chapter</option>
           <option value="oldest">Oldest Chapter</option>
         </select>
@@ -134,14 +136,16 @@ function ChapterList(props) {
         {props.chapters.map((item, index) => (
           <a
             href={item.url}
-            className="flex cursor-pointer items-center justify-between gap-1 rounded  bg-slate-800 py-0.5 px-2 text-sm font-medium transition-all ease-linear  hover:text-emerald-400 xl:text-base"
+            className="flex cursor-pointer items-center justify-between gap-1 rounded bg-slate-200 py-0.5 px-2 text-sm font-medium transition-all ease-linear hover:text-emerald-500  dark:bg-slate-800 xl:text-base"
             key={index}
           >
             <div className="inline-flex gap-1 truncate">
               <div className="">Chapter {item.chapter}:</div>
               <div className="truncate">{item.title}</div>
             </div>
-            <time className="ml-1 min-w-fit inline-flex items-center gap-1 xl:text-sm text-xs"><FaRegClock/> {item.date}</time>
+            <time className="ml-1 inline-flex min-w-fit items-center gap-1 text-xs xl:text-sm">
+              <FaRegClock /> {item.date}
+            </time>
           </a>
         )) || <Skeleton count={1} />}
       </div>
@@ -155,7 +159,7 @@ function Manga() {
       chapter: 1,
       title: "The new world",
       date: "2020-01-01",
-      url: "#"
+      url: "#",
     },
     {
       chapter: 2,
@@ -218,10 +222,10 @@ function Manga() {
   return (
     <main className="relative">
       <Banner url="https://api.lorem.space/image/movie?w=500&hash=3dwnfq7k" />
-      <section className="grid xl:grid-cols-5 grid-cols-1 py-1 justify-items-center gap-3 sm:grid-cols-4">
+      <section className="mt-2 grid grid-cols-1 justify-items-center gap-3 sm:grid-cols-4 xl:grid-cols-5">
         <MangaCover url="https://api.lorem.space/image/movie?w=500&hash=3dwnfq7k" />
         <div className="sm:col-start-1">
-          <MangaStats size={'16px'} rating={4.2} save={2121} view={3423} />
+          <MangaStats size={"16px"} rating={4.2} save={2121} view={3423} />
         </div>
         <MangaInfo
           title="Lorem ipsum dolor sitam et. Quisqu natus!"

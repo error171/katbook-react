@@ -25,10 +25,9 @@ MFA.login(username, password).then(async () => {
 });
 function Card(props) {
   return (
-    <SkeletonTheme baseColor="#334155" highlightColor="#475569">
       <a
         href={props.url}
-        className=" inline-grid aspect-[1.618] w-full max-w-sm grid-cols-3 overflow-hidden rounded-md bg-slate-800/80 shadow-md md:rounded-lg"
+        className=" inline-grid aspect-[1.618] w-full bg-slate-200/80 max-w-sm grid-cols-3 overflow-hidden rounded-md dark:bg-slate-800 shadow-lg md:rounded-lg"
       >
         <div className="relative ">
           <img
@@ -38,7 +37,7 @@ function Card(props) {
           />
         </div>
         <div className="col-span-2 space-y-2 px-3 py-2 md:py-2 md:px-3">
-          <h1 className="overflow-hidden font-semibold leading-tight tracking-wide line-clamp-2 md:text-lg">
+          <h1 className="overflow-hidden font-semibold md:leading-6 tracking-wide line-clamp-2 md:text-lg">
             {props.title || <Skeleton count={2} />}
           </h1>
           <MangaStats
@@ -52,7 +51,6 @@ function Card(props) {
           </div>
         </div>
       </a>
-    </SkeletonTheme>
   );
 }
 function Tag(props) {
@@ -60,7 +58,7 @@ function Tag(props) {
     <div className="flex flex-wrap gap-1 ">
       {props.tags?.slice(0, 5).map((item, index) => (
         <span
-          className="rounded bg-slate-700/80 px-1.5  text-xs font-semibold text-slate-300 md:text-sm"
+          className="rounded bg-slate-300 text-slate-700 dark:bg-slate-700/80 px-1.5  text-xs font-semibold dark:text-slate-300 md:text-sm"
           key={index}
         >
           {item.name}

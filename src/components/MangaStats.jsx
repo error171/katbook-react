@@ -4,7 +4,7 @@ import { HiOutlineStar } from "react-icons/hi";
 
 export function MangaStats(props) {
   return (
-    <div style={{fontSize: props.size}} className="flex tracking-tight items-center gap-2  text-slate-400  md:gap-3 sm:text-sm">
+    <div style={{fontSize: props.size}} className="flex tracking-tight items-center gap-2  dark:text-slate-400  md:gap-3 ">
       <div className="flex items-center gap-0.5 text-amber-500">
         <HiOutlineStar className="" size={16} />{" "}
         <span>{props.rating || "N/A"}</span>

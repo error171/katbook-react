@@ -6,29 +6,29 @@ import { FaFireAlt } from "react-icons/fa";
 import { FaRandom } from "react-icons/fa";
 import { FaListUl } from "react-icons/fa";
 import { Link, NavLink } from "react-router-dom";
+import  ThemeToggle  from "./ThemeProvider/ThemeToggle";
 function Sidebar() {
   const linkClass =
-    "flex items-center gap-2 hover:bg-slate-700 rounded-xl transition-all ease-in px-4 py-2";
+    "flex items-center gap-2 dark:hover:bg-slate-700 hover:bg-slate-300 rounded-xl transition-all ease-linear px-4 py-2";
   const linkStyles = ({ isActive }) => {
     return {
       backgroundColor: isActive ? "#34d399" : "",
       color: isActive ? "#1e293b" : "",
-      fontWeight: isActive ? "bold" : "",
     };
   };
   return (
     <aside
-      className="sidebar fixed top-0 z-10 hidden h-screen w-64 bg-slate-800/70 shadow-2xl shadow-slate-900 lg:block"
+      className="sidebar fixed top-0 z-10 hidden h-screen w-64 bg-slate-100 dark:bg-slate-800 shadow-xl lg:block"
       aria-label="Sidebar"
     >
-      <div className="overflow-y-auto p-4 text-slate-400">
+      <div className="overflow-y-auto p-4">
         <Link className="block p-4" to="/">
           <span className="bg-gradient-to-r from-emerald-400 to-indigo-500 bg-clip-text text-3xl font-bold text-transparent lg:text-3xl">
             Katbook
           </span>
         </Link>
         {/* <div className="mx-4 mt-2 text-sm font-bold">MENU</div> */}
-        <div className="space-y-2 font-medium tracking-wide text-slate-300">
+        <div className="space-y-2 font-medium tracking-wide">
           <NavLink style={linkStyles} className={linkClass} to="/">
             <HiHome size={20} />
             Home

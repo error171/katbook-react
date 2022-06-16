@@ -16,7 +16,7 @@ function App() {
       <Routes >
         <Route path="/" element={<Home />} />
         <Route path="/manga" element={<Manga />} />
-        <Route path="/chapter/:id" element={<Chapter />} />
+        <Route path="/chapter" element={<Chapter />} />
         <Route path="/search/:query" element={<Search />} />
         <Route path="*" element={<Home/>} />
       </Routes>

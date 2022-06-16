@@ -1,4 +1,4 @@
-/* .banner-container {
+.banner-container {
   position: absolute;
   left: 0;
   top: 0;
@@ -23,4 +23,4 @@
   pointer-events: none;
   backdrop-filter: brightness(0.75);
   backdrop-filter: blur(10px);
-} */
+}

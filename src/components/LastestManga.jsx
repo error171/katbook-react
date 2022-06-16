@@ -36,7 +36,6 @@ function Card(props) {
 function LastestManga() {
   return (
     <>
-      <SkeletonTheme baseColor="#475569" highlightColor="#64748b">
         <div className="z-10 py-3 text-2xl font-medium md:text-3xl">Latest Updates</div>
         <div className="inline-grid w-auto grid-cols-2 gap-x-6 gap-y-3 sm:grid-cols-4 md:grid-cols-5 xl:grid-cols-6 ">
           <Card
@@ -52,7 +51,6 @@ function LastestManga() {
           <Card />
           <Card />
         </div>
-      </SkeletonTheme>
     </>
   );
 }
