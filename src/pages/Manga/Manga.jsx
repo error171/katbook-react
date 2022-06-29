@@ -1,41 +1,45 @@
 import { React, useEffect } from "react";
 import "./Manga.css";
-import { FaEllipsisH, FaRegBookmark, FaRegClock } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaEllipsisH, FaRegBookmark, FaRegClock } from "react-icons/fa";
 import { HiBookOpen } from "react-icons/hi";
 import { MangaStats } from "../../components/MangaStats";
 import { useState } from "react";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
-
+import { Link, useLocation } from "react-router-dom";
+import { request } from "../../api/axios";
+import qs from "qs";
 function Banner(props) {
   return (
     <div
       id="banner"
-      className="banner-container h-64  overflow-hidden md:h-72 lg:h-64 xl:h-[300px]"
+      className="absolute inset-0 -z-10 h-64 overflow-hidden from-slate-50 to-slate-50/40 after:absolute after:inset-0 after:bg-gradient-to-t  dark:from-slate-900 dark:to-slate-900/30 md:h-72 lg:h-64 xl:h-[300px]"
     >
       <div
-        className="-z-10 h-full w-full bg-cover bg-fixed bg-center bg-no-repeat"
+        className="-z-10 h-full w-full bg-cover bg-fixed bg-center blur"
         style={{ backgroundImage: `url(${props.url})` }}
       ></div>
-      {/* <div className="absolute inset-0  bg-gradient-to-r backdrop-blur from-slate-900/90 to-transparent"></div> */}
+      {/* <img src={props.url} className="w-full blur bg-no-repeat bg-cover bg-center bg-fixed" /> */}
     </div>
   );
 }
 function MangaCover(props) {
   return (
     <div className="relative h-auto w-1/2 rounded-md sm:row-span-2 sm:w-full">
-      {<img
-        className="z-10 h-full w-full rounded-md object-cover object-center"
-        src={props.url}
-      /> || <Skeleton height={'100%'}/>}
+      {(
+        <img
+          className="z-10 h-full w-full rounded-md object-cover object-center shadow-lg"
+          src={props.url}
+        />
+      ) || <Skeleton height={"100%"} />}
     </div>
   );
 }
 function MangaInfo(props) {
   return (
-    <div className="flex flex-col gap-1 sm:col-span-full sm:col-start-2 sm:row-start-1 sm:text-white">
+    <div className="flex flex-col gap-1 justify-self-start sm:col-span-full sm:col-start-2 sm:row-start-1 ">
       <h1
         aria-label="Title"
-        className="text-2xl font-semibold leading-7 sm:text-4xl xl:text-5xl"
+        className="text-2xl font-semibold leading-7 sm:text-4xl md:text-5xl"
       >
         {props.title}
       </h1>
@@ -43,9 +47,11 @@ function MangaInfo(props) {
         {props.altTitle}
       </h2>
 
-      <div className="text-sm sm:text-lg">{props.author}</div>
+      <div className="text-sm sm:text-lg">
+        {props.author} , {props.artist}
+      </div>
       <div className="text-sm font-medium lg:text-base">
-        Publication: {props.publicationDate},
+        Publication: {props.year || "N/A"},
         {props.status === "ongoing" ? (
           <span className="text-blue-400"> Ongoing</span>
         ) : props.status === "completed" ? (
@@ -62,13 +68,13 @@ function MangaInfo(props) {
 function Tag(props) {
   return (
     <div className="flex flex-wrap gap-1 place-self-start sm:col-span-3 md:mt-2	">
-      {props.tags.map((item, index) => (
+      {props.tags?.map((item, index) => (
         <a
-          href={item.url}
+          href={item.id}
           className="rounded bg-slate-200 px-1.5 text-xs font-semibold text-slate-600 dark:bg-slate-700/80 dark:text-slate-300 md:text-sm"
           key={index}
         >
-          {item.name}
+          {item.attributes.name.en}
         </a>
       ))}
     </div>
@@ -83,13 +89,13 @@ function Buttons(props) {
       <button className="inline-flex aspect-square h-12 w-12 items-center justify-center rounded-lg bg-slate-200 shadow-md active:bg-slate-300 dark:bg-slate-800 dark:active:bg-slate-800/70">
         <FaRegBookmark size={20} />
       </button>
-      <a
-        href={props.url}
+      <Link
+        to={"/chapter/" + props.id}
         className="inline-flex h-12 grow cursor-pointer items-center justify-center gap-1 rounded-lg bg-emerald-500 font-bold shadow-lg shadow-emerald-300 active:bg-emerald-600  dark:shadow-emerald-800 sm:order-first"
       >
         <HiBookOpen size={24} />
         Read
-      </a>
+      </Link>
     </div>
   );
 }
@@ -97,11 +103,8 @@ function Description(props) {
   const [showMore, setShowMore] = useState(false); // show more is false by default
 
   return (
-    <div className="mt-2 text-sm sm:col-span-4 xl:text-base">
-      <div
-        className="relative truncate whitespace-pre-line border-b border-emerald-500/80 p-1"
-        onClick={() => setShowMore(!showMore)} // toggle show more
-      >
+    <div className="mt-2 w-full text-sm sm:col-span-4 xl:text-base">
+      <div className="relative overflow-hidden whitespace-pre-line border-b border-emerald-500/80 p-1 py-3">
         {/* overlay */}
         {!showMore ? (
           <div className="absolute inset-0 bg-gradient-to-t from-slate-100  via-transparent to-transparent  dark:from-slate-900"></div>
@@ -109,7 +112,9 @@ function Description(props) {
           ""
         )}
         {/* // substring the description */}
-        {showMore ? props.text : `${props.text.substring(0, 150)}...`}
+        {showMore
+          ? props.text || "No description"
+          : `${props.text?.substring(0, 150)}...`}
       </div>
       <div className="flex w-full justify-center ">
         <button
@@ -123,126 +128,157 @@ function Description(props) {
   );
 }
 function ChapterList(props) {
+  const [sortState, setSortState] = useState("descending");
+  const sortMethods = {
+    none: { method: () => null },
+    ascending: { method: undefined },
+    descending: { method: (a, b) => (a > b ? -1 : 1) },
+  };
   return (
     <div className=" w-full sm:col-span-4">
       <div className="my-2 flex items-center justify-between">
         <h1 className="text-xl xl:text-2xl">Chapters</h1>
-        <select className="rounded bg-slate-200 pr-8 text-sm dark:bg-slate-800">
-          <option value="newest">Newest Chapter</option>
-          <option value="oldest">Oldest Chapter</option>
+        <select
+          defaultValue={"descending"}
+          onChange={(e) => {
+            console.log(e.target.value);
+            setSortState(e.target.value)}
+          }
+          className="rounded bg-slate-200 pr-8 text-sm dark:bg-slate-800"
+        >
+          <option value="descending">Newest Chapter</option>
+          <option value="ascending">Oldest Chapter</option>
         </select>
       </div>
       <div className="flex flex-col gap-1.5">
-        {props.chapters.map((item, index) => (
-          <a
-            href={item.url}
-            className="flex cursor-pointer items-center justify-between gap-1 rounded bg-slate-200 py-0.5 px-2 text-sm font-medium transition-all ease-linear hover:text-emerald-500  dark:bg-slate-800 xl:text-base"
-            key={index}
-          >
-            <div className="inline-flex gap-1 truncate">
-              <div className="">Chapter {item.chapter}:</div>
-              <div className="truncate">{item.title}</div>
-            </div>
-            <time className="ml-1 inline-flex min-w-fit items-center gap-1 text-xs xl:text-sm">
-              <FaRegClock /> {item.date}
-            </time>
-          </a>
-        )) || <Skeleton count={1} />}
+        {props.chapters
+          ?.sort(sortMethods[sortState].method)
+          ?.map((chapter, index) => (
+            <Link
+              to={"/chapter/" + chapter.id}
+              className="flex cursor-pointer items-center justify-between gap-1 rounded bg-slate-200 py-0.5 px-2 text-sm font-medium transition-all ease-linear hover:text-emerald-500  dark:bg-slate-800 xl:text-base"
+              key={index}
+            >
+              <div className="inline-flex items-center gap-1 truncate">
+                <div className="">Chapter {chapter.attributes.chapter}:</div>
+                <div className="truncate">{chapter.attributes.title}</div>
+                <div className="h-fit rounded-full bg-slate-300 px-1.5 text-xs dark:bg-slate-700 ">
+                  {chapter.attributes.translatedLanguage}
+                </div>
+              </div>
+              <time className="ml-1 inline-flex min-w-fit items-center gap-1 text-xs xl:text-sm">
+                <FaRegClock />{" "}
+                {new Date(chapter.attributes.readableAt).toLocaleDateString(
+                  "en-GB"
+                )}
+              </time>
+            </Link>
+          )) || <Skeleton count={1} />}
       </div>
     </div>
   );
 }
-
+function Pagination(props) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  return (
+    <div className="flex justify-center">
+      <button className="rounded aspect-square bg-slate-200 px-2 text-sm font-medium">
+        <FaChevronLeft />
+      </button>
+      <Link to={`?page=`+setCurrentPage(currentPage+1)}  className="rounded aspect-square bg-slate-200 px-2 text-sm font-medium">
+        <FaChevronRight />
+      </Link>
+    </div>
+  );
+}
 function Manga() {
-  let chapters = [
-    {
-      chapter: 1,
-      title: "The new world",
-      date: "2020-01-01",
-      url: "#",
-    },
-    {
-      chapter: 2,
-      title: "Three trees",
-      date: "2020-01-02",
-    },
-    {
-      chapter: 3,
-      title: "tree sssss sss ssss sss sss ssss",
-      date: "2020-01-02",
-    },
-  ];
-  let tags = [
-    {
-      name: "Action",
-      url: "#",
-    },
-    {
-      name: "Adventure",
-      url: "#",
-    },
-    {
-      name: "Comedy",
-      url: "#",
-    },
-    {
-      name: "Drama",
-      url: "#",
-    },
-    {
-      name: "Fantasy",
-      url: "#",
-    },
-    {
-      name: "Historical",
-      url: "#",
-    },
-    {
-      name: "Horror",
-      url: "#",
-    },
-    {
-      name: "Drama",
-      url: "#",
-    },
-    {
-      name: "Fantasy",
-      url: "#",
-    },
-    {
-      name: "Historical",
-      url: "#",
-    },
-    {
-      name: "Horror",
-      url: "#",
-    },
-  ];
-  const year = new Date().getFullYear();
+  const [manga, setManga] = useState(null);
+  const [chapters, setChapters] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const id = useLocation().pathname.split("/")[2];
+  const page = useLocation().search.split("=")[1];
+  console.log(page);
+  useEffect(() => {
+    request
+      .get("/manga/" + id, {
+        params: {
+          includes: ["cover_art", "author", "artist"],
+        },
+        paramsSerializer: (params) => {
+          return qs.stringify(params);
+        },
+      })
+      .then((res) => {
+        console.log(res.data.data);
+        setManga(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    }, [id]);
+    useEffect(() => {
+    request
+      .get("chapter", {
+        params: {
+          manga: id,
+          limit: 96,
+          offset: (page - 1) * 96 || 1,
+          order: {
+            chapter: "desc",
+          },
+        },
+        paramsSerializer: (params) => {
+          return qs.stringify(params);
+        },
+      })
+      .then((res) => {
+        console.log(res.data.data);
+        setChapters(res.data.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    }, [page]);
+  let img;
+  let author;
+  let artist;
+  let title = manga?.attributes?.title.en;
+  let description = manga?.attributes?.description.en;
+  let year = manga?.attributes?.year;
+  let status = manga?.attributes?.status;
+  let tags = manga?.attributes?.tags;
+
+  manga?.relationships?.map((element) => {
+    if (element.type === "cover_art") {
+      img = `https://uploads.mangadex.org/covers/${manga?.id}/${element.attributes.fileName}.256.jpg`;
+    } else if (element.type === "author") {
+      author = element.attributes.name;
+    } else if (element.type === "artist") {
+      artist = element.attributes.name;
+    }
+  });
   return (
     <main className="relative">
-      <Banner url="https://api.lorem.space/image/movie?w=500&hash=3dwnfq7k" />
-      <section className="mt-2 grid grid-cols-1 justify-items-center gap-3 sm:grid-cols-4 xl:grid-cols-5">
-        <MangaCover url="https://api.lorem.space/image/movie?w=500&hash=3dwnfq7k" />
+      <Banner url={img} />
+      <section className="mt-2 grid grid-cols-1  justify-items-center gap-3 sm:grid-cols-4 xl:grid-cols-5 xl:gap-x-4">
+        <MangaCover url={img} />
         <div className="sm:col-start-1">
           <MangaStats size={"16px"} rating={4.2} save={2121} view={3423} />
         </div>
         <MangaInfo
-          title="Lorem ipsum dolor sitam et. Quisqu natus!"
-          altTitle="onsectetur adipisicing elit. Quisquam, natus!"
-          author="Ak wdMA, wak d"
-          publicationDate={year}
-          status="completed"
+          title={title}
+          author={author}
+          artist={artist}
+          year={year}
+          status={status}
         />
         <Tag tags={tags} />
-        <Buttons />
-        <Description
-          text="1orem ipsum, dolor sit amet consectetur adipisicing elit. Illum optio excepturi soluta harum expedita, molestias debitis pariatur a ducimus incidunt perferendis quam nemo quae, possimus id error, nam impedit dolores?
-         2orem ipsum, dolor s
-         
-         it amet consectetur adipisicing elit. Accusamus, officia fugiat assumenda eveniet laboriosam odit, soluta doloribus fugit veniam animi totam facilis saepe expedita optio atque reprehenderit, minima natus culpa minus tempora modi provident. Deleniti quis quo tempora voluptatem officia?"
-        />
+        <Buttons id={id} />
+        <Description text={description} />
         <ChapterList chapters={chapters} />
+        {/* <Pagination currentPage={currentPage} /> */}
       </section>
     </main>
   );

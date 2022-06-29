@@ -4,6 +4,7 @@
   top: 0;
   z-index: -1;
   width: 100%;
+  inset: 0;
 } 
 .banner-container:after {
    
@@ -23,4 +24,8 @@
   pointer-events: none;
   backdrop-filter: brightness(0.75);
   backdrop-filter: blur(10px);
+}
+.desc{
+  word-wrap: break-word;
+
 }
