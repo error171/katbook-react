@@ -1,5 +1,5 @@
 [[redirects]]
-  from = "/*"
+  from = "/manga"
   to = "https://api.mangadex.org/"
   status = 200
 
