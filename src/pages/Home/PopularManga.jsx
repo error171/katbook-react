@@ -60,7 +60,7 @@ function PopularManga() {
   const [manga, setManga] = useState(null);
   useEffect(() => {
     request
-      .get("/manga/", {
+      .get("/manga", {
         params: {
           limit: 30,
           includes: ["cover_art"],
@@ -76,7 +76,6 @@ function PopularManga() {
       .catch((err) => {
         console.log(err);
       });
-    console.log(request.PopularManga)
   }, []);
 
   return (

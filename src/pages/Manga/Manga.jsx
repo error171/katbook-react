@@ -1,6 +1,12 @@
 import { React, useEffect } from "react";
-import "./Manga.css";
-import { FaChevronLeft, FaChevronRight, FaEllipsisH, FaRegBookmark, FaRegClock } from "react-icons/fa";
+import {
+  FaBookmark,
+  FaChevronLeft,
+  FaChevronRight,
+  FaEllipsisH,
+  FaRegBookmark,
+  FaRegClock,
+} from "react-icons/fa";
 import { HiBookOpen } from "react-icons/hi";
 import { MangaStats } from "../../components/MangaStats";
 import { useState } from "react";
@@ -11,7 +17,6 @@ import qs from "qs";
 function Banner(props) {
   return (
     <div
-      id="banner"
       className="absolute inset-0 -z-10 h-64 overflow-hidden from-slate-50 to-slate-50/40 after:absolute after:inset-0 after:bg-gradient-to-t  dark:from-slate-900 dark:to-slate-900/30 md:h-72 lg:h-64 xl:h-[300px]"
     >
       <div
@@ -27,7 +32,7 @@ function MangaCover(props) {
     <div className="relative h-auto w-1/2 rounded-md sm:row-span-2 sm:w-full">
       {(
         <img
-          className="z-10 h-full w-full rounded-md object-cover object-center shadow-lg"
+          className="z-10 h-full w-full  rounded-md object-cover object-center shadow-lg"
           src={props.url}
         />
       ) || <Skeleton height={"100%"} />}
@@ -36,10 +41,10 @@ function MangaCover(props) {
 }
 function MangaInfo(props) {
   return (
-    <div className="flex flex-col gap-1 justify-self-start sm:col-span-full sm:col-start-2 sm:row-start-1 ">
+    <div className="flex w-full flex-col gap-1 justify-self-start sm:col-span-full sm:col-start-2 sm:row-start-1 ">
       <h1
         aria-label="Title"
-        className="text-2xl font-semibold leading-7 sm:text-4xl md:text-5xl"
+        className="break-words text-2xl font-semibold leading-7 sm:text-4xl "
       >
         {props.title}
       </h1>
@@ -53,11 +58,11 @@ function MangaInfo(props) {
       <div className="text-sm font-medium lg:text-base">
         Publication: {props.year || "N/A"},
         {props.status === "ongoing" ? (
-          <span className="text-blue-400"> Ongoing</span>
+          <span className="text-blue-600 dark:text-blue-400"> Ongoing</span>
         ) : props.status === "completed" ? (
-          <span className="text-green-400 "> Completed</span>
+          <span className="text-green-600 dark:text-green-400 "> Completed</span>
         ) : props.status === "cancelled" ? (
-          <span className="text-red-400 "> Cancelled</span>
+          <span className="text-red-600 dark:text-red-400"> Cancelled</span>
         ) : (
           ""
         )}
@@ -67,10 +72,10 @@ function MangaInfo(props) {
 }
 function Tag(props) {
   return (
-    <div className="flex flex-wrap gap-1 place-self-start sm:col-span-3 md:mt-2	">
+    <div className="flex flex-wrap gap-1 place-self-start sm:col-start-1 sm:col-span-full md:mt-2	">
       {props.tags?.map((item, index) => (
         <a
-          href={item.id}
+          href="#"
           className="rounded bg-slate-200 px-1.5 text-xs font-semibold text-slate-600 dark:bg-slate-700/80 dark:text-slate-300 md:text-sm"
           key={index}
         >
@@ -81,17 +86,22 @@ function Tag(props) {
   );
 }
 function Buttons(props) {
+  const [bookmark, setBookmark] = useState(false);
+  const handleBookmark = () => {
+    setBookmark(!bookmark);
+  }
   return (
     <div className="inline-flex  w-full gap-2 sm:col-span-2 sm:col-start-2 sm:row-start-2 sm:items-end">
       <button className="inline-flex aspect-square  h-12 w-12 items-center justify-center rounded-lg bg-slate-200 shadow-md active:bg-slate-300 dark:bg-slate-800 dark:active:bg-slate-800/70 sm:order-last">
         <FaEllipsisH size={20} />
       </button>
-      <button className="inline-flex aspect-square h-12 w-12 items-center justify-center rounded-lg bg-slate-200 shadow-md active:bg-slate-300 dark:bg-slate-800 dark:active:bg-slate-800/70">
-        <FaRegBookmark size={20} />
+      <button onClick={handleBookmark} className="inline-flex aspect-square h-12 w-12 items-center justify-center rounded-lg bg-slate-200 shadow-md dark:bg-slate-800 ">
+        { !bookmark ? <FaRegBookmark size={20} />:
+        <FaBookmark size={20} className="text-emerald-400 dark:text-emerald-500"/>}
       </button>
       <Link
         to={"/chapter/" + props.id}
-        className="inline-flex h-12 grow cursor-pointer items-center justify-center gap-1 rounded-lg bg-emerald-500 font-bold shadow-lg shadow-emerald-300 active:bg-emerald-600  dark:shadow-emerald-800 sm:order-first"
+        className="inline-flex h-12 grow cursor-pointer items-center justify-center gap-1 rounded-lg bg-emerald-400 font-bold shadow-lg ease-linear duration-200 hover:shadow-emerald-300 dark:bg-emerald-500  dark:hover:shadow-emerald-800 sm:order-first"
       >
         <HiBookOpen size={24} />
         Read
@@ -101,68 +111,67 @@ function Buttons(props) {
 }
 function Description(props) {
   const [showMore, setShowMore] = useState(false); // show more is false by default
-
   return (
-    <div className="mt-2 w-full text-sm sm:col-span-4 xl:text-base">
+    <div className="mt-2 w-full text-sm sm:col-span-full xl:text-base">
       <div className="relative overflow-hidden whitespace-pre-line border-b border-emerald-500/80 p-1 py-3">
         {/* overlay */}
-        {!showMore ? (
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-100  via-transparent to-transparent  dark:from-slate-900"></div>
-        ) : (
-          ""
-        )}
+        {props.text?.length > 150 &&
+          (!showMore ? (
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-100  via-transparent to-transparent  dark:from-slate-900"></div>
+          ) : (
+            ""
+          ))}
         {/* // substring the description */}
-        {showMore
-          ? props.text || "No description"
-          : `${props.text?.substring(0, 150)}...`}
+        {showMore ? props.text : `${props.text?.substring(0, 150)}...`}
       </div>
       <div className="flex w-full justify-center ">
-        <button
-          onClick={() => setShowMore(!showMore)} // toggle show more
-          className="rounded-b bg-emerald-500/80 px-2 font-medium"
-        >
-          {showMore ? "⬆ Show less" : "⬇ Show more"}
-        </button>
+        {props.text?.length > 150 && (
+          <button
+            onClick={() => setShowMore(!showMore)} // toggle show more
+            className="rounded-b bg-emerald-400/80 px-2 text-sm font-medium"
+          >
+            {showMore ? "⬆ Show less" : "⬇ Show more"}
+          </button>
+        )}
       </div>
     </div>
   );
 }
 function ChapterList(props) {
   const [sortState, setSortState] = useState("descending");
-  const sortMethods = {
-    none: { method: () => null },
-    ascending: { method: undefined },
-    descending: { method: (a, b) => (a > b ? -1 : 1) },
-  };
+  const [chapterList, setChapterList] = useState(null)
+  console.log(chapterList)
+  useEffect(() => {
+    setChapterList(props.chapters)
+    sortState ? 'ascending' : setChapterList(chapterList.reverse());
+  },[])
   return (
-    <div className=" w-full sm:col-span-4">
+    <div className=" w-full sm:col-span-full">
       <div className="my-2 flex items-center justify-between">
         <h1 className="text-xl xl:text-2xl">Chapters</h1>
         <select
           defaultValue={"descending"}
           onChange={(e) => {
             console.log(e.target.value);
-            setSortState(e.target.value)}
-          }
+            setSortState(e.target.value);
+          }}
           className="rounded bg-slate-200 pr-8 text-sm dark:bg-slate-800"
         >
           <option value="descending">Newest Chapter</option>
           <option value="ascending">Oldest Chapter</option>
         </select>
       </div>
-      <div className="flex flex-col gap-1.5">
-        {props.chapters
-          ?.sort(sortMethods[sortState].method)
-          ?.map((chapter, index) => (
+      <div className="flex flex-col  gap-1.5">
+        {chapterList?.map((chapter, index) => (
             <Link
               to={"/chapter/" + chapter.id}
-              className="flex cursor-pointer items-center justify-between gap-1 rounded bg-slate-200 py-0.5 px-2 text-sm font-medium transition-all ease-linear hover:text-emerald-500  dark:bg-slate-800 xl:text-base"
+              className="flex cursor-pointer items-center justify-between gap-1 rounded bg-slate-100 py-0.5 px-2 text-sm font-medium transition-all ease-linear hover:text-emerald-500 dark:hover:text-emerald-400  dark:bg-slate-800 xl:text-base"
               key={index}
             >
               <div className="inline-flex items-center gap-1 truncate">
                 <div className="">Chapter {chapter.attributes.chapter}:</div>
                 <div className="truncate">{chapter.attributes.title}</div>
-                <div className="h-fit rounded-full bg-slate-300 px-1.5 text-xs dark:bg-slate-700 ">
+                <div className="h-fit rounded-full bg-slate-200 px-1.5 text-xs dark:bg-slate-700 ">
                   {chapter.attributes.translatedLanguage}
                 </div>
               </div>
@@ -173,7 +182,7 @@ function ChapterList(props) {
                 )}
               </time>
             </Link>
-          )) || <Skeleton count={1} />}
+          )) || "N/A"}
       </div>
     </div>
   );
@@ -183,10 +192,13 @@ function Pagination(props) {
   const [totalPages, setTotalPages] = useState(1);
   return (
     <div className="flex justify-center">
-      <button className="rounded aspect-square bg-slate-200 px-2 text-sm font-medium">
+      <button className="aspect-square rounded bg-slate-200 px-2 text-sm font-medium">
         <FaChevronLeft />
       </button>
-      <Link to={`?page=`+setCurrentPage(currentPage+1)}  className="rounded aspect-square bg-slate-200 px-2 text-sm font-medium">
+      <Link
+        to={`?page=` + setCurrentPage(currentPage + 1)}
+        className="aspect-square rounded bg-slate-200 px-2 text-sm font-medium"
+      >
         <FaChevronRight />
       </Link>
     </div>
@@ -197,7 +209,7 @@ function Manga() {
   const [chapters, setChapters] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const id = useLocation().pathname.split("/")[2];
-  const page = useLocation().search.split("=")[1];
+  const [page, setPage] = useState(0);
   console.log(page);
   useEffect(() => {
     request
@@ -210,37 +222,36 @@ function Manga() {
         },
       })
       .then((res) => {
-        console.log(res.data.data);
+        // console.log(res.data.data);
         setManga(res.data.data);
       })
       .catch((err) => {
         console.log(err);
       });
-
-    }, [id]);
-    useEffect(() => {
+  }, [id]);
+  useEffect(() => {
     request
       .get("chapter", {
         params: {
           manga: id,
           limit: 96,
-          offset: (page - 1) * 96 || 1,
           order: {
             chapter: "desc",
           },
+
         },
         paramsSerializer: (params) => {
           return qs.stringify(params);
         },
       })
       .then((res) => {
-        console.log(res.data.data);
+        // console.log(res.data.data);
         setChapters(res.data.data);
       })
       .catch((err) => {
         console.log(err);
       });
-    }, [page]);
+  }, [page]);
   let img;
   let author;
   let artist;

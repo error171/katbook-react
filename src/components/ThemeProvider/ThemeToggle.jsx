@@ -7,7 +7,7 @@ const ThemeToggle = () => {
   const { theme, setTheme } = React.useContext(ThemeContext);
 
   return (
-    <div className='transition-all ease-linear duration-200'>
+    <div className='ease-in-out transition duration-300'>
       {theme === 'dark' ? (
         <button
           onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
