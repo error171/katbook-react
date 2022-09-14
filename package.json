@@ -2,7 +2,7 @@
   "name": "catbook",
   "private": true,
   "version": "0.0.0",
-  "proxy": "https://api.mangadex.org/",
+  "proxy": "https://api.mangadex.org",
   "homepage": "https://cat-book.netlify.app/",
   "scripts": {
     "dev": "vite",

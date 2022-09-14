@@ -1,4 +1,0 @@
-[[redirects]]
-  from = "/*"
-  to = "https://api.mangadex.org/"
-  status = 200
