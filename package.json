@@ -2,6 +2,8 @@
   "name": "catbook",
   "private": true,
   "version": "0.0.0",
+  "proxy": "https://api.mangadex.org/",
+  "homepage": "https://catbook.vercel.app/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -12,6 +14,7 @@
     "@tailwindcss/forms": "^0.5.2",
     "axios": "^0.27.2",
     "buffer": "^6.0.3",
+    "http-proxy-middleware": "^2.0.6",
     "mangadex-full-api": "^5.11.1",
     "qs": "^6.10.5",
     "react": "^18.2.0",
