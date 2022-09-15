@@ -1,6 +1,6 @@
-##Catbook manga reading website 
+# Catbook - manga reading website 
 
-Using ReactJS, TailwindCSS, MangaDexAPI
+#### Using ReactJS, TailwindCSS, [MangaDexAPI](https://api.mangadex.org/docs/)
 
 ## Available Scripts
 
